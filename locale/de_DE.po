@@ -250,11 +250,11 @@ msgstr "Letztes Bestellungsimportdatum erforderlich"
 
 msgctxt "field:sale.channel,last_product_export_time:"
 msgid "Last Product Export Time"
-msgstr "Letztes Artikelexport"
+msgstr "Letzter Artikelexport"
 
 msgctxt "field:sale.channel,last_product_price_export_time:"
 msgid "Last Product Price Export Time"
-msgstr "Letztes Artikelpreisexport"
+msgstr "Letzter Artikelpreisexport"
 
 msgctxt "field:sale.channel,last_shipment_export_time:"
 msgid "Last shipment export time"
