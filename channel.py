@@ -55,8 +55,9 @@ class SaleChannel(ModelSQL, ModelView):
             ('party', '=', Eval('company_party')),
         ], depends=['company_party']
     )
-    source = fields.Selection(
-        'get_source', 'Source', required=True, states=STATES, depends=DEPENDS
+    source = fields.Selection([
+            ('manual', 'Manual'),
+            ], 'Source', required=True, states=STATES, depends=DEPENDS
     )
 
     read_users = fields.Many2Many(
@@ -186,13 +187,6 @@ class SaleChannel(ModelSQL, ModelView):
         unit = Uom.search([('name', '=', 'Unit')])
 
         return unit and unit[0].id or None
-
-    @classmethod
-    def get_source(cls):
-        """
-        Get the source
-        """
-        return [('manual', 'Manual')]
 
     @staticmethod
     def default_last_order_import_time():
