@@ -10,6 +10,7 @@ from trytond.transaction import Transaction
 from trytond.pyson import Eval, Bool
 from trytond.model import ModelView, fields, ModelSQL
 from dateutil.relativedelta import relativedelta
+from trytond.modules.company.company import TIMEZONES
 
 __metaclass__ = PoolMeta
 __all__ = [
@@ -148,8 +149,17 @@ class SaleChannel(ModelSQL, ModelView):
         'Last Inventory Export Time', states=INVISIBLE_IF_MANUAL,
         depends=['source']
     )
+
+    timezone = fields.Selection(
+        TIMEZONES, 'Timezone',
+        translate=False, required=True
+    )
     # This field is to set according to sequence
     sequence = fields.Integer('Sequence', select=True)
+
+    @staticmethod
+    def default_timezone():
+        return 'UTC'
 
     @staticmethod
     def default_sequence():
@@ -223,14 +233,14 @@ class SaleChannel(ModelSQL, ModelView):
         """
         return cls(Transaction().context['current_channel'])
 
-    def get_order_states_to_import(self, include_past_orders=False):
+    def get_order_states_to_import(self):
         """
         Return list of `sale.channel.order_state` to import orders
         """
         OrderState = Pool().get('sale.channel.order_state')
 
         order_states_to_import = ['process_automatically', 'process_manually']
-        if include_past_orders:
+        if Transaction().context.get('include_past_orders', False):
             order_states_to_import.append('import_as_past')
 
         order_states = OrderState.search([
@@ -446,7 +456,7 @@ class SaleChannel(ModelSQL, ModelView):
             % self.source
         )  # pragma: nocover
 
-    def import_product(self, identifier):
+    def import_product(self, identifier, product_data=None):
         """
         Import specific product from external channel based on product
         identifier.
@@ -464,7 +474,7 @@ class SaleChannel(ModelSQL, ModelView):
             % self.source
         )  # pragma: nocover
 
-    def get_product(self, identifier):
+    def get_product(self, identifier, product_data=None):
         """
         Given a SKU find the product or if it aint there create it and then
         return the active record of the product. This cannot be done async
@@ -474,7 +484,7 @@ class SaleChannel(ModelSQL, ModelView):
 
         :param identifier: product identifier
         """
-        return self.import_product(identifier)
+        return self.import_product(identifier, product_data)
 
     @classmethod
     @ModelView.button_action('sale_channel.wizard_import_data')
