@@ -84,6 +84,10 @@ msgctxt "field:product.listing.add.start,channel:"
 msgid "Channel"
 msgstr "Vertriebskanal"
 
+msgctxt "field:product.listing.add.start,channel_source:"
+msgid "Channel Source"
+msgstr "Quelle"
+
 msgctxt "field:product.listing.add.start,id:"
 msgid "ID"
 msgstr "ID"
@@ -296,6 +300,10 @@ msgctxt "field:sale.channel,source:"
 msgid "Source"
 msgstr "Quelle"
 
+msgctxt "field:sale.channel,timezone:"
+msgid "Timezone"
+msgstr "Zeitzone"
+
 msgctxt "field:sale.channel,warehouse:"
 msgid "Warehouse"
 msgstr "Warenlager"
@@ -468,13 +476,9 @@ msgctxt "field:sale.channel.import_data.success,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:sale.channel.import_data.success,no_of_orders:"
-msgid "Number Of Orders Imported"
-msgstr "Anzahl der importierten Aufträge"
-
-msgctxt "field:sale.channel.import_data.success,no_of_products:"
-msgid "Number Of Products Imported"
-msgstr "Anzahl der importierten Artikel"
+msgctxt "field:sale.channel.import_data.success,message:"
+msgid "Message"
+msgstr "Nachricht"
 
 msgctxt "field:sale.channel.import_order_states.start,id:"
 msgid "ID"
@@ -724,6 +728,10 @@ msgctxt "selection:sale.channel,shipment_method:"
 msgid "On Order Processed"
 msgstr "Bei Auftragsausführung"
 
+msgctxt "selection:sale.channel,source:"
+msgid "Manual"
+msgstr "Manuell"
+
 msgctxt "selection:sale.channel.import_data.start,import_products:"
 msgid "All"
 msgstr "Alle"
@@ -793,6 +801,10 @@ msgid "Add Channel Listing"
 msgstr "Kanallistung hinzufügen"
 
 msgctxt "view:product.product.channel_listing:"
+msgid "Export Inventory"
+msgstr "Lagerbestand exportieren"
+
+msgctxt "view:product.product.channel_listing:"
 msgid "Product Channel Listing"
 msgstr "Variantenlisting"
 
@@ -841,12 +853,8 @@ msgid "Import Data"
 msgstr "Daten importieren"
 
 msgctxt "view:sale.channel.import_data.success:"
-msgid "Data has been imported successfully"
-msgstr "Die Daten wurden erfolgreich importiert."
-
-msgctxt "view:sale.channel.import_data.success:"
-msgid "Import Orders"
-msgstr "Aufträge importieren"
+msgid "Import Data"
+msgstr "Daten importieren"
 
 msgctxt "view:sale.channel.import_order_states.start:"
 msgid "Import Order States"
