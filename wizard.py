@@ -133,7 +133,7 @@ class ExportDataWizard(Wizard):
             or self.start.export_product_prices or self.start.export_inventory
         ):
             return self.raise_user_error(
-                "Atleast one checkbox need to be ticked"
+                "At least one checkbox need to be ticked"
             )
 
         message = '\n\nData Has Been Exported Successfully To %s \n\n' % (
@@ -446,7 +446,7 @@ class ExportPricesStart(ModelView):
     "Export Prices Start View"
     __name__ = 'sale.channel.export_prices.start'
 
-    message = fields.Text("Messgae", readonly=True)
+    message = fields.Text("Message", readonly=True)
 
 
 class ExportPricesStatus(ModelView):
