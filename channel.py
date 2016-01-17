@@ -314,36 +314,6 @@ class SaleChannel(ModelSQL, ModelView):
                     # Silently pass if method is not implemented
                     pass
 
-    @classmethod
-    def export_product_catalog_using_cron(cls):  # pragma: nocover
-        """
-        Cron method to export product catalog to external channel using cron
-
-        Downstream module need not to implement this method.
-
-        Silently pass if export_product_catalog is not implemented
-        """
-        for channel in cls.search([]):
-            with Transaction().set_context(company=channel.company.id):
-                try:
-                    channel.export_product_catalog()
-                except NotImplementedError:
-                    # Silently pass if method is not implemented
-                    pass
-
-    def export_product_catalog(self):
-        """
-        Export product catalog to external channel
-
-        Since external channels are implemented by downstream modules, it is
-        the responsibility of those channels to implement importing or call
-        super to delegate.
-        """
-        raise NotImplementedError(
-            "Method export_product_catalog is not implemented yet for %s "
-            "channels" % self.source
-        )
-
     def get_listings_to_export_inventory(self):
         """
         This method returns listing, which needs inventory update
@@ -389,13 +359,23 @@ class SaleChannel(ModelSQL, ModelView):
         Export inventory to external channel
         """
         Listing = Pool().get('product.product.channel_listing')
+        Channel = Pool().get('sale.channel')
+
+        last_inventory_export_time = datetime.utcnow()
+        channel_id = self.id
 
         listings = self.get_listings_to_export_inventory()
-        self.last_inventory_export_time = datetime.utcnow()
-        self.save()
-
         # TODO: check if inventory export is allowed for this channel
-        return Listing.export_bulk_inventory(listings)
+        Listing.export_bulk_inventory(listings)
+
+        # XXX: Exporting inventory to external channel is an expensive.
+        # To avoid lock on sale_channel table save record after
+        # exporting all inventory
+        with Transaction().new_cursor() as txn:
+            channel = Channel(channel_id)
+            channel.last_inventory_export_time = last_inventory_export_time
+            channel.save()
+            txn.cursor.commit()
 
     @classmethod
     def export_inventory_from_cron(cls):  # pragma: nocover
