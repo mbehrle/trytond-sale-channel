@@ -396,10 +396,6 @@ msgctxt "field:sale.channel.export_data.start,export_product_prices:"
 msgid "Export Product Prices ?"
 msgstr "Artikelpreise exportieren?"
 
-msgctxt "field:sale.channel.export_data.start,export_products:"
-msgid "Export Products ?"
-msgstr "Artikel exportieren?"
-
 msgctxt "field:sale.channel.export_data.start,id:"
 msgid "ID"
 msgstr "ID"
@@ -421,7 +417,7 @@ msgid "ID"
 msgstr "ID"
 
 msgctxt "field:sale.channel.export_prices.start,message:"
-msgid "Messgae"
+msgid "Message"
 msgstr "Nachricht"
 
 msgctxt "field:sale.channel.export_prices.status,id:"
@@ -595,10 +591,6 @@ msgstr "Daten importieren"
 msgctxt "model:ir.action,name:wizard_import_order_states"
 msgid "Import Order States"
 msgstr "Auftragsstatus importieren"
-
-msgctxt "model:ir.cron,name:cron_export_product_catalog"
-msgid "Export Product Catalog"
-msgstr "Artikelkatalog exportieren"
 
 msgctxt "model:ir.cron,name:cron_import_orders"
 msgid "Import Orders"
