@@ -275,10 +275,12 @@ class Sale:
     def write(cls, sales, values, *args):
         """
         Check if channel in sale is is user's create_channel
+        Channel can only be changed in state 'draft'
         """
         if 'channel' in values:
-            # Channel cannot be changed at any cost.
-            cls.raise_user_error('channel_change_not_allowed')
+            for sale in sales:
+                if sale.state != 'draft':
+                    cls.raise_user_error('channel_change_not_allowed')
 
         super(Sale, cls).write(sales, values, *args)
 
