@@ -15,7 +15,7 @@
     <label name="sequence"/>
     <field name="sequence"/>
     <notebook colspan="6">
-        <page string="Configuration" id="configuration" states="{'invisible': Eval('source') == 'manual' }">
+        <page string="Configuration" id="configuration" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
             <notebook >
                 <page string="General" id="general">
                 </page>
@@ -27,7 +27,7 @@
                 </page>
                 <page string="Advanced" id="advanced">
                 </page>
-                <page string="Last Import / Export Time" id="last_import_export_time" states="{'invisible': Eval('source') == 'manual' }">
+                <page string="Last Import / Export Time" id="last_import_export_time" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
                     <label name="last_order_import_time"/>
                     <field name="last_order_import_time"/>
                     <label name="last_order_export_time"/>
@@ -43,7 +43,7 @@
                 </page>                
             </notebook>
         </page>
-        <page string="Shipping Carriers" id="shipping_carriers">
+        <page string="Shipping Carriers" id="shipping_carriers" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
             <field name="shipping_carriers" colspan="4"/>
             <group id="channel_buttons" col="3" colspan="6">
                 <button string="Import Shipping Carriers" name="import_shipping_carriers"/>
@@ -63,7 +63,7 @@
             <label name="price_list"/>
             <field name="price_list"/>
         </page>
-        <page string="Product Defaults" id="product_defaults" states="{'invisible': Eval('source') == 'manual' }">
+        <page string="Product Defaults" id="product_defaults" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
             <label string="These values would be needed at the time of creating products, imported from the external channel." id="product_message"
                 colspan="4" yalign="0.0" xalign="0.0" xexpand="1"/>
             <newline/>
@@ -74,12 +74,12 @@
             <field name="read_users" colspan="6"/>
             <field name="create_users" colspan="6"/>
         </page>
-        <page string="Order States" id="order_states" states="{'invisible': Eval('source') == 'manual' }" >
+        <page string="Order States" id="order_states" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}" >
             <button string="Import Order States" name="import_order_states_button"/>
             <field name="order_states" colspan="6"/>
         </page>
     </notebook>
-    <group id="import_export_buttons" colspan="8" states="{'invisible': Eval('source') == 'manual' }">
+    <group id="import_export_buttons" colspan="8" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
         <button string="Import Data" name="import_data_button"/>
         <button string="Export Data" name="export_data_button"/>
     </group>
