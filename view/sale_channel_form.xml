@@ -15,7 +15,7 @@
     <label name="sequence"/>
     <field name="sequence"/>
     <notebook colspan="6">
-        <page string="Configuration" id="configuration" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
+        <page string="Configuration" id="configuration">
             <notebook >
                 <page string="General" id="general">
                 </page>
@@ -23,11 +23,9 @@
                     <label name="timezone"/>
                     <field name="timezone" colspan="3"/>
                 </page>
-                <page string="Taxes" id="taxes">
-                </page>
                 <page string="Advanced" id="advanced">
                 </page>
-                <page string="Last Import / Export Time" id="last_import_export_time" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
+                <page string="Last Import / Export Time" id="last_import_export_time">
                     <label name="last_order_import_time"/>
                     <field name="last_order_import_time"/>
                     <label name="last_order_export_time"/>
@@ -63,7 +61,7 @@
             <label name="price_list"/>
             <field name="price_list"/>
         </page>
-        <page string="Product Defaults" id="product_defaults" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
+        <page string="Product Defaults" id="product_defaults">
             <label string="These values would be needed at the time of creating products, imported from the external channel." id="product_message"
                 colspan="4" yalign="0.0" xalign="0.0" xexpand="1"/>
             <newline/>
@@ -74,12 +72,15 @@
             <field name="read_users" colspan="6"/>
             <field name="create_users" colspan="6"/>
         </page>
-        <page string="Order States" id="order_states" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}" >
+        <page string="Order States" id="order_states">
             <button string="Import Order States" name="import_order_states_button"/>
             <field name="order_states" colspan="6"/>
         </page>
+        <page string="Taxes" id="taxes">
+            <field name="taxes" colspan="4"/>
+        </page>
     </notebook>
-    <group id="import_export_buttons" colspan="8" states="{'invisible': Or(Eval('source') == 'manual', Eval('source') == 'pos')}">
+    <group id="import_export_buttons" colspan="8">
         <button string="Import Data" name="import_data_button"/>
         <button string="Export Data" name="export_data_button"/>
     </group>

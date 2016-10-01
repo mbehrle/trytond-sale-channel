@@ -5,7 +5,8 @@
 """
 from trytond.pool import Pool
 from channel import (
-    SaleChannel, ReadUser, WriteUser, ChannelException, ChannelOrderState
+    SaleChannel, ReadUser, WriteUser, ChannelException, ChannelOrderState,
+    TaxMapping
 )
 from wizard import (
     ImportDataWizard, ImportDataWizardStart, ImportDataWizardSuccess,
@@ -15,8 +16,9 @@ from wizard import (
 )
 from product import (
     ProductSaleChannelListing, Product, AddProductListing,
-    AddProductListingStart
+    AddProductListingStart, Template, TemplateSaleChannelListing
 )
+from party import Party, PartySaleChannelListing
 from carrier import SaleChannelCarrier
 from sale import Sale, SaleLine
 from user import User
@@ -25,16 +27,21 @@ from user import User
 def register():
     Pool.register(
         SaleChannel,
+        TaxMapping,
         ReadUser,
         WriteUser,
         ChannelException,
         ChannelOrderState,
         SaleChannelCarrier,
+        Party,
+        PartySaleChannelListing,
         User,
         Sale,
         SaleLine,
         ProductSaleChannelListing,
         Product,
+        Template,
+        TemplateSaleChannelListing,
         ImportDataWizardStart,
         ImportDataWizardSuccess,
         ImportDataWizardProperties,

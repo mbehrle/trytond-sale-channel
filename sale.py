@@ -23,8 +23,8 @@ class Sale:
         ],
         states={
             'readonly': Or(
-                (Eval('id', default=0) > 0),
-                Bool(Eval('lines', default=[])),
+                (Eval('id', 0) > 0),
+                Bool(Eval('lines', [])),
             )
         }, depends=['id']
     )
@@ -48,6 +48,13 @@ class Sale:
 
     # XXX: to identify sale order in external channel
     channel_identifier = fields.Char('Channel Identifier', readonly=True)
+
+    @classmethod
+    def view_attributes(cls):
+        return super(Sale, cls).view_attributes() + [
+            ('//page[@name="exceptions"]', 'states', {
+                    'invisible': Eval('channel_type') == 'manual',
+                    })]
 
     @classmethod
     def validate(cls, sales):
@@ -123,6 +130,9 @@ class Sale:
                 'have required permissions'
             ),
             "duplicate_order": 'Sale with Order ID "%s" already exists',
+            "channel_exception": (
+                "You missed some unresolved exceptions in sale %s."
+            ),
         })
 
     @classmethod
@@ -209,43 +219,27 @@ class Sale:
     @fields.depends('channel', 'party')
     def on_change_channel(self):
         if not self.channel:
-            return {}  # pragma: nocover
-        res = {}
+            return
         for fname in ('company', 'warehouse', 'currency', 'payment_term'):
             fvalue = getattr(self.channel, fname)
             if fvalue:
-                res[fname] = fvalue.id
+                setattr(self, fname, fvalue)
         if (not self.party or not self.party.sale_price_list):
-            res['price_list'] = self.channel.price_list.id  # pragma: nocover
+            self.price_list = self.channel.price_list.id  # pragma: nocover
         if self.channel.invoice_method:
-            res['invoice_method'] = self.channel.invoice_method
+            self.invoice_method = self.channel.invoice_method
         if self.channel.shipment_method:
-            res['shipment_method'] = self.channel.shipment_method
-
-        # Update AR record
-        for key, value in res.iteritems():
-            if '.' not in key:
-                setattr(self, key, value)
-        return res
+            self.shipment_method = self.channel.shipment_method
 
     @fields.depends('channel')
     def on_change_party(self):  # pragma: nocover
-        res = super(Sale, self).on_change_party()
-        channel = self.channel
-
-        if channel:
-            if not res.get('price_list') and res.get('invoice_address'):
-                res['price_list'] = channel.price_list.id
-                res['price_list.rec_name'] = channel.price_list.rec_name
-            if not res.get('payment_term') and res.get('invoice_address'):
-                res['payment_term'] = channel.payment_term.id
-                res['payment_term.rec_name'] = \
-                    self.channel.payment_term.rec_name
-
-        # Update AR record
-        for key, value in res.iteritems():
-            setattr(self, key, value)
-        return res
+        super(Sale, self).on_change_party()
+        if self.channel:
+            if not self.price_list and self.invoice_address:
+                self.price_list = self.channel.price_list.id
+                self.price_list.rec_name = self.channel.price_list.rec_name
+            if not self.payment_term and self.invoice_address:
+                self.payment_term = self.channel.payment_term.id
 
     @fields.depends('channel')
     def on_change_with_channel_type(self, name=None):
@@ -316,8 +310,17 @@ class Sale:
                 default['channel'] = cls.default_channel()
 
         default['channel_identifier'] = None
+        default['exceptions'] = None
 
         return super(Sale, cls).copy(sales, default=default)
+
+    @classmethod
+    def confirm(cls, sales):
+        "Validate sale before confirming"
+        for sale in sales:
+            if sale.has_channel_exception:
+                cls.raise_user_error('channel_exception', sale.reference)
+        super(Sale, cls).confirm(sales)
 
     def process_to_channel_state(self, channel_state):
         """
@@ -331,11 +334,19 @@ class Sale:
 
         data = self.channel.get_tryton_action(channel_state)
 
-        if data['action'] in ['process_manually', 'process_automatically']:
-            Sale.quote([self])
-            Sale.confirm([self])
+        if self.state == 'draft':
+            self.invoice_method = data['invoice_method']
+            self.shipment_method = data['shipment_method']
+            self.save()
 
-        if data['action'] == 'process_automatically':
+        if data['action'] in ['process_manually', 'process_automatically']:
+            if self.state == 'draft':
+                Sale.quote([self])
+            if self.state == 'quotation':
+                Sale.confirm([self])
+
+        if data['action'] == 'process_automatically' and \
+                self.state == 'confirmed':
             Sale.process([self])
             for shipment in self.shipments:
                 if shipment.state == 'draft':
@@ -343,10 +354,12 @@ class Sale:
                 if shipment.state == 'waiting':
                     Shipment.assign_try([shipment])
 
-        if data['action'] == 'import_as_past':
+        if data['action'] == 'import_as_past' and self.state == 'draft':
             # XXX: mark past orders as completed
             self.state = 'done'
             self.save()
+            # Update cached values
+            Sale.store_cache([self])
 
 
 class SaleLine:

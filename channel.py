@@ -8,14 +8,14 @@ from datetime import datetime
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, Bool
-from trytond.model import ModelView, fields, ModelSQL
+from trytond.model import ModelView, fields, ModelSQL, Unique
 from dateutil.relativedelta import relativedelta
 from trytond.modules.company.company import TIMEZONES
 
 __metaclass__ = PoolMeta
 __all__ = [
     'SaleChannel', 'ReadUser', 'WriteUser', 'ChannelException',
-    'ChannelOrderState'
+    'ChannelOrderState', 'TaxMapping'
 ]
 
 STATES = {
@@ -99,6 +99,7 @@ class SaleChannel(ModelSQL, ModelView):
         fields.Many2One('party.party', 'Company Party'),
         'on_change_with_company_party'
     )
+    taxes = fields.One2Many("sale.channel.tax", "channel", "Taxes")
 
     # These fields would be needed at the time of product imports from
     # external channel
@@ -177,6 +178,25 @@ class SaleChannel(ModelSQL, ModelView):
         return False
 
     @classmethod
+    def view_attributes(cls):
+        return super(SaleChannel, cls).view_attributes() + [
+            ('//page[@id="configuration"]', 'states', {
+                    'invisible': Eval('source') == 'manual',
+                    }),
+            ('//page[@id="last_import_export_time"]', 'states', {
+                    'invisible': Eval('source') == 'manual',
+                    }),
+            ('//page[@id="product_defaults"]', 'states', {
+                    'invisible': Eval('source') == 'manual',
+                    }),
+            ('//page[@id="order_states"]', 'states', {
+                    'invisible': Eval('source') == 'manual',
+                    }),
+            ('//page[@id="import_export_buttons"]', 'states', {
+                    'invisible': Eval('source') == 'manual',
+                    })]
+
+    @classmethod
     def __setup__(cls):
         """
         Setup the class before adding to pool
@@ -191,6 +211,8 @@ class SaleChannel(ModelSQL, ModelView):
         cls._error_messages.update({
             "no_carriers_found":
                 "Shipping carrier is not configured for code: %s",
+            "no_tax_found":
+                "%s (tax) of rate %f was not found.",
             "no_order_states_to_import":
                 "No importable order state found\n"
                 "HINT: Import order states from Order States tab in Channel"
@@ -255,7 +277,7 @@ class SaleChannel(ModelSQL, ModelView):
             "This feature has not been implemented."
         )
 
-    def get_shipping_carrier(self, code):
+    def get_shipping_carrier(self, code, silent=False):
         """
         Search for an existing carrier by matching code and channel.
         If found, return its active record else raise_user_error.
@@ -268,6 +290,8 @@ class SaleChannel(ModelSQL, ModelView):
                 ('channel', '=', self.id),
             ])
         except ValueError:
+            if silent:
+                return None
             self.raise_user_error(
                 'no_carriers_found',
                 error_args=code
@@ -356,6 +380,17 @@ class SaleChannel(ModelSQL, ModelView):
                     # Silently pass if method is not implemented
                     pass
 
+    @classmethod
+    def export_order_status_using_cron(cls):
+        """
+        Export sales orders status to external channel using cron
+        """
+        for channel in cls.search([]):
+            try:
+                channel.export_order_status()
+            except NotImplementedError:
+                pass
+
     def get_listings_to_export_inventory(self):
         """
         This method returns listing, which needs inventory update
@@ -365,7 +400,7 @@ class SaleChannel(ModelSQL, ModelView):
         :return: List of AR of `product.product.channel_listing`
         """
         ChannelListing = Pool().get('product.product.channel_listing')
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
 
         if not self.last_inventory_export_time:
             # Return all active listings
@@ -413,11 +448,11 @@ class SaleChannel(ModelSQL, ModelView):
         # XXX: Exporting inventory to external channel is an expensive.
         # To avoid lock on sale_channel table save record after
         # exporting all inventory
-        with Transaction().new_cursor() as txn:
+        with Transaction().new_transaction() as txn:
             channel = Channel(channel_id)
             channel.last_inventory_export_time = last_inventory_export_time
             channel.save()
-            txn.cursor.commit()
+            txn.commit()
 
     @classmethod
     def export_inventory_from_cron(cls):  # pragma: nocover
@@ -682,6 +717,31 @@ class SaleChannel(ModelSQL, ModelView):
             % self.source
         )
 
+    def get_tax(self, name, rate):
+        """
+        Search for an existing Tax record by matching name and rate.
+        If found return its active record else raise user error.
+        """
+        TaxMapping = Pool().get('sale.channel.tax')
+        domain = [
+            ('rate', '=', rate),
+            ('channel', '=', self)
+        ]
+        if name:
+            # Search with name when it is provided
+            # Name can be explicitly passed as None, when external
+            # channels like magento does not provide it.
+            domain.append(('name', '=', name))
+
+        try:
+            mapped_tax, = TaxMapping.search(domain)
+        except ValueError:
+            self.raise_user_error(
+                'no_tax_found', error_args=(name, rate)
+            )
+        else:
+            return mapped_tax.tax
+
 
 class ReadUser(ModelSQL):
     """
@@ -726,7 +786,7 @@ class ChannelException(ModelSQL, ModelView):
     channel = fields.Many2One(
         "sale.channel", "Channel", required=True, readonly=True
     )
-    is_resolved = fields.Boolean("Is Resolved ?", select=True, readonly=True)
+    is_resolved = fields.Boolean("Is Resolved ?", select=True)
 
     @classmethod
     def __setup__(cls):
@@ -810,3 +870,28 @@ class ChannelOrderState(ModelSQL, ModelView):
     def default_channel():
         "Return default channel from context"
         return Transaction().context.get('current_channel')
+
+
+class TaxMapping(ModelSQL, ModelView):
+    'Sale Tax'
+    __name__ = 'sale.channel.tax'
+
+    name = fields.Char("Name", required=True)
+    rate = fields.Numeric('Rate', digits=(14, 10), required=True)
+    tax = fields.Many2One("account.tax", "Tax", required=True)
+    channel = fields.Many2One("sale.channel", "Channel", required=True)
+
+    @classmethod
+    def __setup__(cls):
+        super(TaxMapping, cls).__setup__()
+
+        table = cls.__table__()
+        cls._error_messages.update({
+            'unique_tax_rate_per_channel':
+            "Tax rate and name must be unique per channel"
+        })
+        cls._sql_constraints += [
+            ('unique_tax_percent',
+             Unique(table, table.channel, table.name, table.rate),
+             'unique_tax_rate_per_channel')
+        ]

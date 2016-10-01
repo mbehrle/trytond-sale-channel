@@ -13,16 +13,19 @@ Implementing Add listing wizard for downstream modules:
   views or transitions. Eventually it should end with the `end` state.
 
 """
+from collections import defaultdict
+
 from trytond.pool import PoolMeta, Pool
 from trytond.wizard import Wizard, Button, StateTransition, StateView
 from trytond.transaction import Transaction
-from trytond.model import ModelView, fields, ModelSQL
+from trytond.model import ModelView, fields, ModelSQL, Unique
 from trytond.pyson import Eval, Bool
 
 __metaclass__ = PoolMeta
 __all__ = [
     'ProductSaleChannelListing', 'Product', 'AddProductListing',
-    'AddProductListingStart',
+    'AddProductListingStart', 'TemplateSaleChannelListing',
+    'Template'
 ]
 
 
@@ -85,6 +88,50 @@ class AddProductListing(Wizard):
         return 'start_%s' % self.start.channel.source
 
 
+class Template:
+    "Product Template"
+    __name__ = 'product.template'
+
+    channel_listings = fields.One2Many(
+        'product.template.channel_listing', 'template', 'Channel Listings'
+    )
+
+
+class TemplateSaleChannelListing(ModelSQL, ModelView):
+    """
+    Template - Sale Channel
+    This model keeps a record of a template's association with Sale Channels.
+    """
+    __name__ = 'product.template.channel_listing'
+
+    channel = fields.Many2One(
+        'sale.channel', 'Sale Channel',
+        domain=[('source', '!=', 'manual')],
+        select=True, required=True,
+        ondelete='RESTRICT'
+    )
+    template = fields.Many2One(
+        'product.template', 'Product Template', required=True,
+        select=True, ondelete='CASCADE'
+    )
+    template_identifier = fields.Char(
+        'Template Identifier', select=True, required=True
+    )
+
+    @classmethod
+    def __setup__(cls):
+        """
+        Setup the class and define constraints
+        """
+        super(TemplateSaleChannelListing, cls).__setup__()
+        table = cls.__table__()
+        cls._sql_constraints += [(
+            'channel_template_unique',
+            Unique(table, table.channel, table.template_identifier, table.template),  # noqa
+            'Product Template is already mapped to this channel with same identifier'  # noqa
+        )]
+
+
 class Product:
     "Product"
     __name__ = "product.product"
@@ -132,10 +179,13 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         ondelete='RESTRICT'
     )
     product = fields.Many2One(
-        'product.product', 'Product', required=True, select=True,
-        ondelete='CASCADE'
+        'product.product', 'Product', select=True,
+        states={'required': Eval('state') == 'active'},
+        ondelete='CASCADE', depends=['state']
     )
-    product_identifier = fields.Char("Product Identifier")
+    product_identifier = fields.Char(
+        "Product Identifier", select=True, required=True
+    )
     state = fields.Selection([
         ('active', 'Active'),
         ('disabled', 'Disabled'),
@@ -170,26 +220,40 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         }, depends=['availability_type_used']),
         'get_availability_fields'
     )
+    listing_url = fields.Function(
+        fields.Char('Listing URL'), 'get_listing_url'
+    )
 
     def get_unit_digits(self, name):
         if self.product:
             self.product.default_uom.digits
         return 2
 
+    def get_listing_url(self, name):
+        """
+        Downstream modules should implement this function
+        and return a valid url
+        """
+        return None
+
     @classmethod
     def get_availability_fields(cls, listings, names):
-        values = {
-            'availability_type_used': {},
-            'availability_used': {},
-            'quantity': {}
-        }
+        listing_ids = map(int, listings)
+        values = defaultdict(lambda: dict.fromkeys(listing_ids, None))
+        for name in names:
+            # Just call the default dict once so all fields have values
+            # even if product is absent
+            values[name]
+
         for listing in listings:
-            availability = listing.get_availability()
-            values['availability_type_used'][listing.id] = availability['type']
-            values['availability_used'][listing.id] = availability.get(
-                'value'
-            )
-            values['quantity'][listing.id] = availability.get('quantity')
+            if listing.product:
+                availability = listing.get_availability()
+                values['availability_type_used'][listing.id] = \
+                    availability['type']
+                values['availability_used'][listing.id] = availability.get(
+                    'value'
+                )
+                values['quantity'][listing.id] = availability.get('quantity')
         return values
 
     @fields.depends('channel')
@@ -202,11 +266,12 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         Setup the class and define constraints
         '''
         super(ProductSaleChannelListing, cls).__setup__()
+        table = cls.__table__()
         cls._sql_constraints += [
             (
-                'channel_product_unique',
-                'UNIQUE(channel, product)',
-                'Product is already mapped to this channel'
+                'channel_product_identifier_uniq',
+                Unique(table, table.channel, table.product_identifier),
+                'This external product is already mapped with same channel.'
             )
         ]
 
@@ -275,11 +340,12 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         Product = Pool().get('product.product')
 
         with Transaction().set_context(**self.get_availability_context()):
-            rv = {'type': 'bucket'}
-            product = Product(self.product.id)
-            rv['quantity'] = product.quantity
-            if rv['quantity'] > 0:
-                rv['value'] = 'in_stock'
-            else:
-                rv['value'] = 'out_of_stock'
+            rv = {'type': 'bucket', 'value': None, 'quantity': None}
+            if self.product:
+                product = Product(self.product.id)
+                rv['quantity'] = product.quantity
+                if rv['quantity'] > 0:
+                    rv['value'] = 'in_stock'
+                else:
+                    rv['value'] = 'out_of_stock'
             return rv
