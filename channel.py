@@ -179,22 +179,27 @@ class SaleChannel(ModelSQL, ModelView):
 
     @classmethod
     def view_attributes(cls):
+        invisible = Eval('source').in_(['manual', 'pos'])
         return super(SaleChannel, cls).view_attributes() + [
             ('//page[@id="configuration"]', 'states', {
-                    'invisible': Eval('source') == 'manual',
+                    'invisible': invisible,
                     }),
             ('//page[@id="last_import_export_time"]', 'states', {
-                    'invisible': Eval('source') == 'manual',
+                    'invisible': invisible,
                     }),
             ('//page[@id="product_defaults"]', 'states', {
-                    'invisible': Eval('source') == 'manual',
+                    'invisible': invisible,
                     }),
             ('//page[@id="order_states"]', 'states', {
-                    'invisible': Eval('source') == 'manual',
+                    'invisible': invisible,
                     }),
             ('//page[@id="import_export_buttons"]', 'states', {
-                    'invisible': Eval('source') == 'manual',
-                    })]
+                    'invisible': invisible,
+                    }),
+            ('//page[@id="shipping_carriers"]', 'states', {
+                    'invisible': invisible,
+                    })
+            ]
 
     @classmethod
     def __setup__(cls):
