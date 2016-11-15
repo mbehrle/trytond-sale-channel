@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <data>
     <xpath expr="/form/notebook" position="inside">
-        <page id="channel_listing" string="Channel Listing">
+        <page id="channel_listing_template" string="Channel Listing">
             <field name="channel_listings" colspan="6"/>
         </page>
     </xpath>
