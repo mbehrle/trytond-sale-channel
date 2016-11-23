@@ -84,9 +84,7 @@ requires = [
     'pytz',
 ]
 
-MODULE2PREFIX = {
-    'product_notebook': 'fio',
-}
+MODULE2PREFIX = {}
 
 MODULE = "sale_channel"
 PREFIX = "fio"
