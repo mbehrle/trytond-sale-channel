@@ -87,7 +87,7 @@ requires = [
 MODULE2PREFIX = {}
 
 MODULE = "sale_channel"
-PREFIX = "fio"
+PREFIX = "m9s"
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
         requires.append(
