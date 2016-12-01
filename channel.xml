@@ -63,7 +63,19 @@
             <field name="view" ref="sale_channel_view_form" />
             <field name="act_window" ref="act_sale_channel_form" />
         </record>
-        <menuitem parent="sale.menu_configuration" action="act_sale_channel_form"
+
+	<record model="ir.rule.group" id="rule_group_sale_channel">
+            <field name="model" search="[('model', '=', 'sale.channel')]"/>
+            <field name="global_p" eval="True"/>
+        </record>
+        <record model="ir.rule" id="rule_sale_channel1">
+            <field name="domain"
+                eval="[('company', '=', Eval('user', {}).get('company', None))]"
+                pyson="1"/>
+            <field name="rule_group" ref="rule_group_sale_channel"/>
+        </record>
+
+	<menuitem parent="sale.menu_configuration" action="act_sale_channel_form"
           id="menu_sale_channel" icon="tryton-list" />
 
         <record model="ir.action.act_window" id="act_listed_product">
