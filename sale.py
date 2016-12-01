@@ -319,7 +319,7 @@ class Sale:
         "Validate sale before confirming"
         for sale in sales:
             if sale.has_channel_exception:
-                cls.raise_user_error('channel_exception', sale.reference)
+                cls.raise_user_error('channel_exception', sale.number)
         super(Sale, cls).confirm(sales)
 
     def process_to_channel_state(self, channel_state):
