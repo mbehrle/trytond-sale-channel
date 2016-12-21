@@ -84,10 +84,13 @@ requires = [
     'pytz',
 ]
 
-MODULE2PREFIX = {}
+MODULE2PREFIX = {
+    'product_notebook': 'm9s',
+    'sale_payment_gateway': 'm9s',
+    'shipping': 'm9s'
+}
 
 MODULE = "sale_channel"
-PREFIX = "m9s"
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
         requires.append(

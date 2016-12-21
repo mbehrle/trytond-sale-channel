@@ -6,7 +6,7 @@
 from trytond.model import fields
 from trytond.transaction import Transaction
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Or, Bool
+from trytond.pyson import Eval, Or, Bool, If
 
 __all__ = ['Sale', 'SaleLine']
 __metaclass__ = PoolMeta
@@ -19,7 +19,11 @@ class Sale:
     #: belongs to. This helps filling lot of default values on sale.
     channel = fields.Many2One(
         'sale.channel', 'Channel', required=True, select=True, domain=[
-            ('id', 'in', Eval('context', {}).get('allowed_read_channels', [])),
+            ('id', 'in', If(
+                Eval('id', 0) > 0,
+                Eval('context', {}).get('allowed_read_channels', []),
+                Eval('context', {}).get('allowed_create_channels', [])
+            )),
         ],
         states={
             'readonly': Or(
@@ -409,3 +413,18 @@ class SaleLine:
             self.raise_user_error(
                 'duplicate_order_line', (self.channel_identifier,)
             )
+
+    def create_payment_from(self, payment_data):
+        """
+        Create sale payment using given data.
+
+        Since external channels are implemented by downstream modules, it is
+        the responsibility of those channels to reuse this method.
+
+        :param payment_data: Dictionary which must have at least one key-value
+                                pair for 'code'
+        """
+        raise NotImplementedError(
+            "This feature has not been implemented for %s channel yet."
+            % self.source
+        )

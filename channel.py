@@ -15,7 +15,7 @@ from trytond.modules.company.company import TIMEZONES
 __metaclass__ = PoolMeta
 __all__ = [
     'SaleChannel', 'ReadUser', 'WriteUser', 'ChannelException',
-    'ChannelOrderState', 'TaxMapping'
+    'ChannelOrderState', 'TaxMapping', 'ChannelPaymentGateway'
 ]
 
 STATES = {
@@ -155,12 +155,33 @@ class SaleChannel(ModelSQL, ModelView):
         depends=['source']
     )
 
+    payment_gateways = fields.One2Many(
+        'sale.channel.payment_gateway', 'channel', 'Payment Gateways'
+    )
+
     timezone = fields.Selection(
         TIMEZONES, 'Timezone',
         translate=False, required=True
     )
     # This field is to set according to sequence
     sequence = fields.Integer('Sequence', select=True)
+
+    invoice_tax_account = fields.Many2One(
+        'account.account', 'Invoice Tax Account',
+        domain=[
+            ('company', '=', Eval('company')),
+            ('kind', 'not in', ['view', 'receivable', 'payable']),
+        ], depends=['company'],
+        help="GL to book for taxes when new taxes are created from channel",
+    )
+    credit_note_tax_account = fields.Many2One(
+        'account.account', 'Credit Note Tax Account',
+        domain=[
+            ('company', '=', Eval('company')),
+            ('kind', 'not in', ['view', 'receivable', 'payable']),
+        ], depends=['company'],
+        help="GL to book for taxes when new taxes are created from channel",
+    )
 
     @staticmethod
     def default_timezone():
@@ -303,6 +324,28 @@ class SaleChannel(ModelSQL, ModelView):
             )
         else:
             return carrier.carrier
+
+    def get_shipping_carrier_service(self, code, silent=False):
+        """
+        Search for an existing carrier service by matching code and channel.
+        If found, return its active record else raise_user_error.
+        """
+        SaleCarrierChannel = Pool().get('sale.channel.carrier')
+
+        try:
+            carrier, = SaleCarrierChannel.search([
+                ('code', '=', code),
+                ('channel', '=', self.id),
+            ])
+        except ValueError:
+            if silent:
+                return None
+            self.raise_user_error(
+                'no_carriers_found',
+                error_args=code
+            )
+        else:
+            return carrier.carrier_service
 
     def get_order_states_to_import(self):
         """
@@ -722,7 +765,7 @@ class SaleChannel(ModelSQL, ModelView):
             % self.source
         )
 
-    def get_tax(self, name, rate):
+    def get_tax(self, name, rate, silent=False):
         """
         Search for an existing Tax record by matching name and rate.
         If found return its active record else raise user error.
@@ -741,6 +784,8 @@ class SaleChannel(ModelSQL, ModelView):
         try:
             mapped_tax, = TaxMapping.search(domain)
         except ValueError:
+            if silent:
+                return None
             self.raise_user_error(
                 'no_tax_found', error_args=(name, rate)
             )
@@ -900,3 +945,49 @@ class TaxMapping(ModelSQL, ModelView):
              Unique(table, table.channel, table.name, table.rate),
              'unique_tax_rate_per_channel')
         ]
+
+
+class ChannelPaymentGateway(ModelSQL, ModelView):
+    """
+    Sale Channel Payment Gateway
+    """
+    __name__ = 'sale.channel.payment_gateway'
+
+    code = fields.Char("Code", required=True, select=True)
+    name = fields.Char('Name', required=True)
+    gateway = fields.Many2One(
+        'payment_gateway.gateway', 'Gateway', required=True,
+        ondelete='RESTRICT', select=True,
+    )
+    channel = fields.Many2One(
+        'sale.channel', 'Channel', readonly=True, select=True,
+    )
+
+    @classmethod
+    def __setup__(cls):
+        """
+        Setup the class before adding to pool
+        """
+        super(ChannelPaymentGateway, cls).__setup__()
+        cls._sql_constraints += [
+            (
+                'code_channel_unique', 'unique(code, channel)',
+                'Payment gateway already exists for this channel'
+            )
+        ]
+
+    @classmethod
+    def find_gateway_using_channel_data(cls, channel, gateway_data):
+        """
+        Search for an existing gateway by matching code and channel.
+        If found, return its active record else None
+        """
+        try:
+            gateway, = cls.search([
+                ('code', '=', gateway_data['code']),
+                ('channel', '=', channel.id),
+            ])
+        except ValueError:
+            return None
+        else:
+            return gateway
