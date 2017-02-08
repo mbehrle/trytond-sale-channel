@@ -2,9 +2,40 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "error:party.party.channel_listing:"
+msgid "Contact is already mapped to this channel with same identifier"
+msgstr ""
+"Der Kontakt ist in diesem Kanal bereits mit demselben Identifikator "
+"eingetragen."
+
 msgctxt "error:product.product.channel_listing:"
-msgid "Product is already mapped to this channel"
-msgstr "Der Artikel wurde bereits diesem Vertriebskanal zugeordnet."
+msgid "This external product is already mapped with same channel."
+msgstr "Diese externe Variante ist in diesem Kanal bereits eingetragen."
+
+msgctxt "error:product.template.channel_listing:"
+msgid ""
+"Product Template is already mapped to this channel with same identifier"
+msgstr ""
+"Der Artikel wurde bereits mit demselben Identifikator in diesem Kanal "
+"eingetragen"
+
+msgctxt "error:sale.channel.payment_gateway:"
+msgid "Payment gateway already exists for this channel"
+msgstr "Zahlungsgateway existiert bereits für diesen Vertriebskanal"
+
+msgctxt "error:sale.channel.tax:"
+msgid "Tax rate and name must be unique per channel"
+msgstr ""
+"Prozentsatz und Name der Steuer können pro Vertriebskanal nur einmal "
+"vergeben werden"
+
+msgctxt "error:sale.channel.tax:"
+msgid "unique_tax_rate_per_channel"
+msgstr "unique_tax_rate_per_channel"
+
+msgctxt "error:sale.channel:"
+msgid "%s (tax) of rate %f was not found."
+msgstr "%s (Steuer) für Satz %f wurde nicht gefunden."
 
 msgctxt "error:sale.channel:"
 msgid ""
@@ -34,7 +65,7 @@ msgstr ""
 
 msgctxt "error:sale.sale:"
 msgid "Sale with Order ID \"%s\" already exists"
-msgstr "Ein Verkauf mit Bestellnr. \"%s\" existiert bereits."
+msgstr "Ein Verkauf mit Bestell-Nr. \"%s\" existiert bereits."
 
 msgctxt "error:sale.sale:"
 msgid ""
@@ -43,6 +74,10 @@ msgid ""
 msgstr ""
 "Sie können in diesem Vertriebskanal keine Aufträge erstellen, weil Sie nicht"
 " über die notwendigen Berechtigungen verfügen."
+
+msgctxt "error:sale.sale:"
+msgid "You missed some unresolved exceptions in sale %s."
+msgstr "Es existieren ungelöste Vorbehalte in Verkauf %s."
 
 msgctxt "field:channel.exception,channel:"
 msgid "Channel"
@@ -81,6 +116,46 @@ msgid "Write Date"
 msgstr "Zuletzt geändert"
 
 msgctxt "field:channel.exception,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:party.party,channel_listings:"
+msgid "Channel Listings"
+msgstr "Vertriebskanal Listings"
+
+msgctxt "field:party.party.channel_listing,channel:"
+msgid "Sale Channel"
+msgstr "Vertriebskanal"
+
+msgctxt "field:party.party.channel_listing,contact_identifier:"
+msgid "Contact Identifier"
+msgstr "Kontaktidentifikator"
+
+msgctxt "field:party.party.channel_listing,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:party.party.channel_listing,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:party.party.channel_listing,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:party.party.channel_listing,party:"
+msgid "Contact"
+msgstr "Kontakt"
+
+msgctxt "field:party.party.channel_listing,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:party.party.channel_listing,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:party.party.channel_listing,write_uid:"
 msgid "Write User"
 msgstr "Letzte Änderung durch"
 
@@ -136,6 +211,10 @@ msgctxt "field:product.product.channel_listing,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:product.product.channel_listing,listing_url:"
+msgid "Listing URL"
+msgstr "Listing-URL"
+
 msgctxt "field:product.product.channel_listing,product:"
 msgid "Product"
 msgstr "Variante"
@@ -165,6 +244,46 @@ msgid "Write Date"
 msgstr "Zuletzt geändert"
 
 msgctxt "field:product.product.channel_listing,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:product.template,channel_listings:"
+msgid "Channel Listings"
+msgstr "Vertriebskanal Listings"
+
+msgctxt "field:product.template.channel_listing,channel:"
+msgid "Sale Channel"
+msgstr "Vertriebskanal"
+
+msgctxt "field:product.template.channel_listing,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:product.template.channel_listing,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:product.template.channel_listing,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:product.template.channel_listing,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:product.template.channel_listing,template:"
+msgid "Product Template"
+msgstr "Artikel"
+
+msgctxt "field:product.template.channel_listing,template_identifier:"
+msgid "Template Identifier"
+msgstr "Artikelidentifikator"
+
+msgctxt "field:product.template.channel_listing,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:product.template.channel_listing,write_uid:"
 msgid "Write User"
 msgstr "Letzte Änderung durch"
 
@@ -220,6 +339,10 @@ msgctxt "field:sale.channel,create_users:"
 msgid "Create Users"
 msgstr "Benutzer mit Schreibberechtigung"
 
+msgctxt "field:sale.channel,credit_note_tax_account:"
+msgid "Credit Note Tax Account"
+msgstr "Gutschrift Steuerkonto"
+
 msgctxt "field:sale.channel,currency:"
 msgid "Currency"
 msgstr "Währung"
@@ -239,6 +362,10 @@ msgstr "ID"
 msgctxt "field:sale.channel,invoice_method:"
 msgid "Invoice Method"
 msgstr "Rechnungsstellung Einkauf"
+
+msgctxt "field:sale.channel,invoice_tax_account:"
+msgid "Invoice Tax Account"
+msgstr "Rechnung Steuerkonto"
 
 msgctxt "field:sale.channel,last_inventory_export_time:"
 msgid "Last Inventory Export Time"
@@ -276,6 +403,10 @@ msgctxt "field:sale.channel,order_states:"
 msgid "Order States"
 msgstr "Auftragsstatus"
 
+msgctxt "field:sale.channel,payment_gateways:"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
 msgctxt "field:sale.channel,payment_term:"
 msgid "Payment Term"
 msgstr "Zahlungsbedingung"
@@ -307,6 +438,10 @@ msgstr "Frachtführer"
 msgctxt "field:sale.channel,source:"
 msgid "Source"
 msgstr "Quelle"
+
+msgctxt "field:sale.channel,taxes:"
+msgid "Taxes"
+msgstr "Steuern"
 
 msgctxt "field:sale.channel,timezone:"
 msgid "Timezone"
@@ -388,9 +523,17 @@ msgctxt "field:sale.channel-write-res.user,write_uid:"
 msgid "Write User"
 msgstr "Letzte Änderung durch"
 
+msgctxt "field:sale.channel.carrier,available_carrier_services:"
+msgid "Available Carrier Services"
+msgstr "Verfügbare Dienste"
+
 msgctxt "field:sale.channel.carrier,carrier:"
 msgid "Carrier"
 msgstr "Frachtführer"
+
+msgctxt "field:sale.channel.carrier,carrier_service:"
+msgid "Service"
+msgstr "Dienstleistung"
 
 msgctxt "field:sale.channel.carrier,channel:"
 msgid "Channel"
@@ -576,6 +719,86 @@ msgctxt "field:sale.channel.order_state,write_uid:"
 msgid "Write User"
 msgstr "Letzte Änderung durch"
 
+msgctxt "field:sale.channel.payment_gateway,channel:"
+msgid "Channel"
+msgstr "Vertriebskanal"
+
+msgctxt "field:sale.channel.payment_gateway,code:"
+msgid "Code"
+msgstr "Variantennummer"
+
+msgctxt "field:sale.channel.payment_gateway,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:sale.channel.payment_gateway,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:sale.channel.payment_gateway,gateway:"
+msgid "Gateway"
+msgstr "Gateway"
+
+msgctxt "field:sale.channel.payment_gateway,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:sale.channel.payment_gateway,name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:sale.channel.payment_gateway,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:sale.channel.payment_gateway,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:sale.channel.payment_gateway,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:sale.channel.tax,channel:"
+msgid "Channel"
+msgstr "Vertriebskanal"
+
+msgctxt "field:sale.channel.tax,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:sale.channel.tax,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:sale.channel.tax,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:sale.channel.tax,name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:sale.channel.tax,rate:"
+msgid "Rate"
+msgstr "Prozentsatz"
+
+msgctxt "field:sale.channel.tax,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:sale.channel.tax,tax:"
+msgid "Tax"
+msgstr "Steuer"
+
+msgctxt "field:sale.channel.tax,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:sale.channel.tax,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
 msgctxt "field:sale.line,channel_identifier:"
 msgid "Channel Identifier"
 msgstr "Kanalidentifikator"
@@ -600,6 +823,14 @@ msgctxt "field:sale.sale,has_channel_exception:"
 msgid "Has Channel Exception ?"
 msgstr "Vertriebskanal Fehler"
 
+msgctxt "help:sale.channel,credit_note_tax_account:"
+msgid "GL to book for taxes when new taxes are created from channel"
+msgstr "Konto für neu aus dem Vertriebskanal erstellte Steuern"
+
+msgctxt "help:sale.channel,invoice_tax_account:"
+msgid "GL to book for taxes when new taxes are created from channel"
+msgstr "Konto für neu aus dem Vertriebskanal erstellte Steuern"
+
 msgctxt "model:channel.exception,name:"
 msgid "Channel Exception model"
 msgstr "Vertriebskanal Ausnahme Modell"
@@ -615,6 +846,10 @@ msgstr "Bestellungen"
 msgctxt "model:ir.action,name:act_sale_channel_form"
 msgid "Channels"
 msgstr "Vertriebskanäle"
+
+msgctxt "model:ir.action,name:act_sale_channel_listing"
+msgid "Channel Listing"
+msgstr "Vertriebskanal Listing"
 
 msgctxt "model:ir.action,name:act_sale_form_all"
 msgid "Sales"
@@ -640,6 +875,35 @@ msgctxt "model:ir.action,name:wizard_import_order_states"
 msgid "Import Order States"
 msgstr "Auftragsstatus importieren"
 
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_sale_channel_listing_domain_active"
+msgid "Active"
+msgstr "Aktiv"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_sale_channel_listing_domain_all"
+msgid "All"
+msgstr "Alle"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_sale_channel_listing_domain_disabled"
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:action_sale_channel_view_domain_active"
+msgid "Active"
+msgstr "Aktiv"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:action_sale_channel_view_domain_disabled"
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+msgctxt "model:ir.cron,name:cron_export_orders"
+msgid "Export Orders Status"
+msgstr "Auftragsstatus exportieren"
+
 msgctxt "model:ir.cron,name:cron_import_orders"
 msgid "Import Orders"
 msgstr "Aufträge importieren"
@@ -660,6 +924,10 @@ msgctxt "model:ir.ui.menu,name:menu_sale_channel"
 msgid "Channels"
 msgstr "Vertriebskanäle"
 
+msgctxt "model:party.party.channel_listing,name:"
+msgid "Party - Sale Channel"
+msgstr "Partei - Vertriebskanal"
+
 msgctxt "model:product.listing.add.start,name:"
 msgid "Add listing form start"
 msgstr "Listingformular Hinzufügen Start"
@@ -667,6 +935,14 @@ msgstr "Listingformular Hinzufügen Start"
 msgctxt "model:product.product.channel_listing,name:"
 msgid "Product - Sale Channel"
 msgstr "Variante - Vertriebskanal"
+
+msgctxt "model:product.template.channel_listing,name:"
+msgid "Template - Sale Channel"
+msgstr "Artikel - Vertriebskanal"
+
+msgctxt "model:res.user,name:user_trigger_orders"
+msgid "Orders Cron Trigger"
+msgstr "Zeitplaner Trigger Aufträge"
 
 msgctxt "model:sale.channel,name:"
 msgid "Sale Channel model"
@@ -719,6 +995,14 @@ msgstr "Auftragsstatus Importieren Start"
 msgctxt "model:sale.channel.order_state,name:"
 msgid "Sale Channel - Tryton Order State map"
 msgstr "Vertriebskanal - Auftragsstatus"
+
+msgctxt "model:sale.channel.payment_gateway,name:"
+msgid "Sale Channel Payment Gateway"
+msgstr "Vertriebskanal Zahlungsgateway"
+
+msgctxt "model:sale.channel.tax,name:"
+msgid "Sale Tax"
+msgstr "Steuer"
 
 msgctxt "selection:product.product.channel_listing,availability_type_used:"
 msgid "Bucket"
@@ -840,6 +1124,14 @@ msgctxt "view:channel.exception:"
 msgid "Resolve"
 msgstr "Auflösen"
 
+msgctxt "view:party.party.channel_listing:"
+msgid "Product Channel Listings"
+msgstr "Variantenlistings"
+
+msgctxt "view:party.party:"
+msgid "Channel Listing"
+msgstr "Vertriebskanal Listing"
+
 msgctxt "view:product.listing.add.start:"
 msgid "Add Channel Listing"
 msgstr "Kanallistung hinzufügen"
@@ -863,6 +1155,14 @@ msgstr "Vertriebskanal Listung"
 msgctxt "view:product.product:"
 msgid "Create a new Listing"
 msgstr "Neues Listing erstellen"
+
+msgctxt "view:product.template.channel_listing:"
+msgid "Product Channel Listings"
+msgstr "Variantenlistings"
+
+msgctxt "view:product.template:"
+msgid "Channel Listing"
+msgstr "Vertriebskanal Listing"
 
 msgctxt "view:res.user:"
 msgid "Channels"
@@ -916,6 +1216,14 @@ msgctxt "view:sale.channel.order_state:"
 msgid "Order States"
 msgstr "Auftragsstatus"
 
+msgctxt "view:sale.channel.payment_gateway:"
+msgid "Channel Payment Gateway"
+msgstr "Vertriebskanal Zahlungsgateway"
+
+msgctxt "view:sale.channel.tax:"
+msgid "Sale Tax"
+msgstr "Verkauf Steuer"
+
 msgctxt "view:sale.channel:"
 msgid "Access"
 msgstr "Berechtigungen"
@@ -963,6 +1271,10 @@ msgstr "Standardeinstellungen für Aufträge"
 msgctxt "view:sale.channel:"
 msgid "Order States"
 msgstr "Auftragsstatus"
+
+msgctxt "view:sale.channel:"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
 
 msgctxt "view:sale.channel:"
 msgid "Product Defaults"
