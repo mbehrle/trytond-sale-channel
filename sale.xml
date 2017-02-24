@@ -12,10 +12,6 @@
             <field name="name">sale_tree</field>
         </record>
 
-        <record model="ir.action.act_window" id="sale.act_sale_form">
-            <field name="search_value" eval="[('channel', '=', Eval('context', {}).get('current_channel.rec_name', ''))]" pyson="1"/>
-        </record>
-
         <record model="ir.rule.group" id="rule_group_sale">
             <field name="model" search="[('model', '=', 'sale.sale')]"/>
             <field name="global_p" eval="False"/>
