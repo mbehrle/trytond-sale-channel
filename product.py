@@ -162,6 +162,14 @@ class Product:
             % channel.source
         )
 
+    @classmethod
+    def copy(cls, products, default=None):
+        if default is None:
+            default = {}
+        default = default.copy()
+        default.setdefault('channel_listings', None)
+        return super(Product, cls).copy(products, default=default)
+
 
 class ProductSaleChannelListing(ModelSQL, ModelView):
     '''Product - Sale Channel
