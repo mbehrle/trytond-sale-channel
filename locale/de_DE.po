@@ -361,7 +361,7 @@ msgstr "ID"
 
 msgctxt "field:sale.channel,invoice_method:"
 msgid "Invoice Method"
-msgstr "Rechnungsstellung Einkauf"
+msgstr "Rechnungsstellung"
 
 msgctxt "field:sale.channel,invoice_tax_account:"
 msgid "Invoice Tax Account"
@@ -429,7 +429,7 @@ msgstr "Reihenfolge"
 
 msgctxt "field:sale.channel,shipment_method:"
 msgid "Shipment Method"
-msgstr "Liefermethode"
+msgstr "Lieferung"
 
 msgctxt "field:sale.channel,shipping_carriers:"
 msgid "Shipping Carriers"
