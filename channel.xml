@@ -81,7 +81,6 @@
         <record model="ir.action.act_window" id="act_listed_product">
             <field name="name">Listed Products</field>
             <field name="res_model">product.product</field>
-            <field name="domain" eval="[('channel_listings.channel', 'in', Eval('active_ids'))]" pyson="1"/>
         </record>
         <record model="ir.action.keyword"
                 id="act_open_sale_channel_keyword">

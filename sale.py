@@ -72,6 +72,7 @@ class Sale:
         """
         if self.channel_identifier and self.search([
             ('channel_identifier', '=', self.channel_identifier),
+            ('channel', '=', self.channel.id),
             ('id', '!=', self.id),
         ]):
             self.raise_user_error('duplicate_order', (self.channel_identifier,))
@@ -402,6 +403,7 @@ class SaleLine:
         """
         if self.channel_identifier and self.search([
             ('channel_identifier', '=', self.channel_identifier),
+            ('sale.channel', '=', self.sale.channel.id),
             ('id', '!=', self.id),
         ]):
             self.raise_user_error(
