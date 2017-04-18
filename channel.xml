@@ -69,6 +69,7 @@
         <record model="ir.action.act_window" id="act_listed_product">
             <field name="name">Listed Products</field>
             <field name="res_model">product.product</field>
+            <field name="domain" eval="[('channel_listings.channel', 'in', Eval('active_ids'))]" pyson="1"/>
         </record>
         <record model="ir.action.keyword"
                 id="act_open_sale_channel_keyword">
@@ -238,6 +239,20 @@
             <field name="model">sale.channel.payment_gateway</field>
             <field name="type">tree</field>
             <field name="name">channel_payment_gateway_tree</field>
+        </record>
+
+        <!--Cron To Import Products-->
+        <record model="ir.cron" id="ir_cron_import_products">
+            <field name="name">Import Products</field>
+            <field name="request_user" ref="res.user_admin"/>
+            <field name="user" ref="res.user_trigger"/>
+            <field name="active" eval="True"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="number_calls">-1</field>
+            <field name="repeat_missed" eval="False"/>
+            <field name="model">sale.channel</field>
+            <field name="function">import_products_using_cron</field>
         </record>
 
     </data>

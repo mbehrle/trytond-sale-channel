@@ -562,6 +562,23 @@ class SaleChannel(ModelSQL, ModelView):
             % self.source
         )  # pragma: nocover
 
+    @classmethod
+    def import_products_using_cron(cls):  # pragma: nocover
+        """
+        Method to import products from channels using cron
+
+        Downstream module need not to implement this method.
+        It will automatically call import_products of the channel
+        Silently pass if import_products is not implemented
+        """
+        for channel in cls.search([]):
+            with Transaction().set_context(company=channel.company.id):
+                try:
+                    channel.import_products()
+                except NotImplementedError:
+                    # Silently pass if method is not implemented
+                    pass
+
     def import_product(self, identifier, product_data=None):
         """
         Import specific product from external channel based on product
