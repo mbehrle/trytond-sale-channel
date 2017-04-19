@@ -232,6 +232,14 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         fields.Char('Listing URL'), 'get_listing_url'
     )
 
+    @classmethod
+    def search_rec_name(cls, name, clause):
+        return [
+            'OR',
+            ('product',) + tuple(clause[1:]),
+            ('product_identifier',) + tuple(clause[1:]),
+        ]
+
     def get_unit_digits(self, name):
         if self.product:
             self.product.default_uom.digits
