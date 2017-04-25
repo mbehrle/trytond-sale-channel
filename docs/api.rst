@@ -45,7 +45,7 @@ Sale Channel
 .. automethod:: SaleChannel.export_order_status
 .. automethod:: SaleChannel.import_orders_using_cron
 .. automethod:: SaleChannel.export_product_prices_using_cron
-.. automethod:: SaleChannel.get_listings_to_export_inventory
+.. automethod:: SaleChannel.get_listings_updated_after
 .. automethod:: SaleChannel.export_inventory
 .. automethod:: SaleChannel.export_inventory_from_cron
 .. automethod:: SaleChannel.import_orders
