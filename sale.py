@@ -221,14 +221,16 @@ class Sale:
             return Channel(channel_id).payment_term.id
         return None  # pragma: nocover
 
-    @fields.depends('channel', 'party')
+    @fields.depends(
+        'channel', 'party', 'company', 'currency', 'payment_term', 'warehouse'
+    )
     def on_change_channel(self):
         if not self.channel:
             return
         for fname in ('company', 'warehouse', 'currency', 'payment_term'):
-            fvalue = getattr(self.channel, fname)
-            if fvalue:
-                setattr(self, fname, fvalue)
+            if not getattr(self, fname):
+                setattr(self, fname, getattr(self.channel, fname))
+
         if (not self.party or not self.party.sale_price_list):
             self.price_list = self.channel.price_list.id  # pragma: nocover
         if self.channel.invoice_method:
