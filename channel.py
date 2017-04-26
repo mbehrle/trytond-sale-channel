@@ -3,9 +3,11 @@
     sale_channel.py
 
 """
+import warnings
 from datetime import datetime
 
 from trytond.pool import PoolMeta, Pool
+from trytond.rpc import RPC
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, Bool
 from trytond.model import ModelView, fields, ModelSQL, Unique
@@ -234,6 +236,9 @@ class SaleChannel(ModelSQL, ModelView):
             'import_order_states_button': {},
             'import_shipping_carriers': {},
         })
+        cls.__rpc__.update({
+            'get_listings_updated_after': RPC(instantiate=0, readonly=True),
+        })
         cls._error_messages.update({
             "no_carriers_found":
                 "Shipping carrier is not configured for code: %s",
@@ -440,6 +445,14 @@ class SaleChannel(ModelSQL, ModelView):
                 pass
 
     def get_listings_to_export_inventory(self):
+        warnings.warn(
+            "Method 'sale.channel.get_listings_to_export_inventory' is "
+            "deprecated, use 'get_listings_updated_after' instead",
+            DeprecationWarning, stacklevel=2
+        )
+        return self.get_listings_updated_after(self.last_inventory_export_time)
+
+    def get_listings_updated_after(self, updated_after=None):
         """
         This method returns listing, which needs inventory update
 
@@ -450,7 +463,7 @@ class SaleChannel(ModelSQL, ModelView):
         ChannelListing = Pool().get('product.product.channel_listing')
         cursor = Transaction().connection.cursor()
 
-        if not self.last_inventory_export_time:
+        if not updated_after:
             # Return all active listings
             return ChannelListing.search([
                 ('channel', '=', self),
@@ -472,9 +485,7 @@ class SaleChannel(ModelSQL, ModelView):
                 )
                 GROUP BY listing.id
             """, (
-                self.id,
-                self.last_inventory_export_time,
-                self.last_inventory_export_time,
+                self.id, updated_after, updated_after
             ))
             listing_ids = map(lambda r: r[0], cursor.fetchall())
             return ChannelListing.browse(listing_ids)
@@ -489,7 +500,8 @@ class SaleChannel(ModelSQL, ModelView):
         last_inventory_export_time = datetime.utcnow()
         channel_id = self.id
 
-        listings = self.get_listings_to_export_inventory()
+        listings = self.get_listings_updated_after(
+            self.last_inventory_export_time)
         # TODO: check if inventory export is allowed for this channel
         Listing.export_bulk_inventory(listings)
 
