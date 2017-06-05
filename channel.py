@@ -45,8 +45,8 @@ class SaleChannel(ModelSQL, ModelView):
         'Name', required=True, select=True, states=STATES, depends=DEPENDS
     )
     code = fields.Char(
-        'Code', select=True, states={'readonly': Eval('code', True)},
-        depends=['code']
+        'Code', select=True, states={'readonly': Bool(Eval('id'))},
+        depends=['id']
     )
     active = fields.Boolean('Active', select=True)
     company = fields.Many2One(
