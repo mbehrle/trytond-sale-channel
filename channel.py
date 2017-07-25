@@ -309,7 +309,7 @@ class SaleChannel(ModelSQL, ModelView):
             "This feature has not been implemented."
         )
 
-    def get_shipping_carrier(self, code, silent=False):
+    def get_shipping_carrier(self, code, name, silent=False):
         """
         Search for an existing carrier by matching code and channel.
         If found, return its active record else raise_user_error.
@@ -320,7 +320,8 @@ class SaleChannel(ModelSQL, ModelView):
             carrier, = SaleCarrierChannel.search([
                 ('code', '=', code),
                 ('channel', '=', self.id),
-            ])
+            ], limit=1)
+            # limit=1 is done to handle concurrency issue
         except ValueError:
             if silent:
                 return None
@@ -329,7 +330,7 @@ class SaleChannel(ModelSQL, ModelView):
                 error_args=code
             )
         else:
-            return carrier.carrier
+            return carrier
 
     def get_shipping_carrier_service(self, code, silent=False):
         """
