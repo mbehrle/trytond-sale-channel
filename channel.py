@@ -318,7 +318,7 @@ class SaleChannel(ModelSQL, ModelView):
 
         try:
             carrier, = SaleCarrierChannel.search([
-                ('code', '=', code),
+                ('code', 'ilike', code),
                 ('channel', '=', self.id),
             ], limit=1)
             # limit=1 is done to handle concurrency issue
@@ -341,7 +341,7 @@ class SaleChannel(ModelSQL, ModelView):
 
         try:
             carrier, = SaleCarrierChannel.search([
-                ('code', '=', code),
+                ('code', 'ilike', code),
                 ('channel', '=', self.id),
             ])
         except ValueError:
