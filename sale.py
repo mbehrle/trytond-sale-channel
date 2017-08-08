@@ -228,8 +228,7 @@ class Sale:
         if not self.channel:
             return
         for fname in ('company', 'warehouse', 'currency', 'payment_term'):
-            if not getattr(self, fname):
-                setattr(self, fname, getattr(self.channel, fname))
+            setattr(self, fname, getattr(self.channel, fname))
 
         if (not self.party or not self.party.sale_price_list):
             self.price_list = self.channel.price_list.id  # pragma: nocover
