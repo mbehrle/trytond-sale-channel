@@ -334,6 +334,7 @@ class Sale:
         :param channel_state: State on external channel the order was imported.
         """
         Sale = Pool().get('sale.sale')
+        Payment = Pool().get('sale.payment')
 
         data = self.channel.get_tryton_action(channel_state)
 
@@ -353,6 +354,7 @@ class Sale:
             Sale.process([self])
 
         if data['action'] == 'import_as_past' and self.state == 'draft':
+            Payment.delete(self.payments)
             # XXX: mark past orders as completed
             self.state = 'done'
             self.save()
