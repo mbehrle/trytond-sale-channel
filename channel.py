@@ -1023,9 +1023,11 @@ class ChannelPaymentGateway(ModelSQL, ModelView):
         Setup the class before adding to pool
         """
         super(ChannelPaymentGateway, cls).__setup__()
+        table = cls.__table__()
         cls._sql_constraints += [
             (
-                'code_channel_unique', 'unique(code, channel)',
+                'code_channel_unique',
+                Unique(table, table.code, table.channel),
                 'Payment gateway already exists for this channel'
             )
         ]
