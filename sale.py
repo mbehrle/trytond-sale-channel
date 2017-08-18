@@ -228,8 +228,7 @@ class Sale:
         if not self.channel:
             return
         for fname in ('company', 'warehouse', 'currency', 'payment_term'):
-            if not getattr(self, fname):
-                setattr(self, fname, getattr(self.channel, fname))
+            setattr(self, fname, getattr(self.channel, fname))
 
         if (not self.party or not self.party.sale_price_list):
             self.price_list = self.channel.price_list.id  # pragma: nocover
@@ -337,6 +336,7 @@ class Sale:
         :param channel_state: State on external channel the order was imported.
         """
         Sale = Pool().get('sale.sale')
+        Payment = Pool().get('sale.payment')
 
         data = self.channel.get_tryton_action(channel_state)
 
@@ -356,6 +356,7 @@ class Sale:
             Sale.process([self])
 
         if data['action'] == 'import_as_past' and self.state == 'draft':
+            Payment.delete(self.payments)
             # XXX: mark past orders as completed
             self.state = 'done'
             self.save()

@@ -45,8 +45,8 @@ class SaleChannel(ModelSQL, ModelView):
         'Name', required=True, select=True, states=STATES, depends=DEPENDS
     )
     code = fields.Char(
-        'Code', select=True, states={'readonly': Eval('code', True)},
-        depends=['code']
+        'Code', select=True, states={'readonly': Bool(Eval('id'))},
+        depends=['id']
     )
     active = fields.Boolean('Active', select=True)
     company = fields.Many2One(
@@ -308,7 +308,7 @@ class SaleChannel(ModelSQL, ModelView):
             "This feature has not been implemented."
         )
 
-    def get_shipping_carrier(self, code, silent=False):
+    def get_shipping_carrier(self, code, name, silent=False):
         """
         Search for an existing carrier by matching code and channel.
         If found, return its active record else raise_user_error.
@@ -317,9 +317,10 @@ class SaleChannel(ModelSQL, ModelView):
 
         try:
             carrier, = SaleCarrierChannel.search([
-                ('code', '=', code),
+                ('code', 'ilike', code),
                 ('channel', '=', self.id),
-            ])
+            ], limit=1)
+            # limit=1 is done to handle concurrency issue
         except ValueError:
             if silent:
                 return None
@@ -328,7 +329,7 @@ class SaleChannel(ModelSQL, ModelView):
                 error_args=code
             )
         else:
-            return carrier.carrier
+            return carrier
 
     def get_shipping_carrier_service(self, code, silent=False):
         """
@@ -339,7 +340,7 @@ class SaleChannel(ModelSQL, ModelView):
 
         try:
             carrier, = SaleCarrierChannel.search([
-                ('code', '=', code),
+                ('code', 'ilike', code),
                 ('channel', '=', self.id),
             ])
         except ValueError:
@@ -1021,9 +1022,11 @@ class ChannelPaymentGateway(ModelSQL, ModelView):
         Setup the class before adding to pool
         """
         super(ChannelPaymentGateway, cls).__setup__()
+        table = cls.__table__()
         cls._sql_constraints += [
             (
-                'code_channel_unique', 'unique(code, channel)',
+                'code_channel_unique',
+                Unique(table, table.code, table.channel),
                 'Payment gateway already exists for this channel'
             )
         ]
