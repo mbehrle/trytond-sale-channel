@@ -51,7 +51,9 @@ class Sale:
     )
 
     # XXX: to identify sale order in external channel
-    channel_identifier = fields.Char('Channel Identifier', readonly=True)
+    channel_identifier = fields.Char(
+        'Channel Identifier', readonly=True, select=True
+    )
 
     @classmethod
     def view_attributes(cls):
