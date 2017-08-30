@@ -129,9 +129,6 @@ class Sale:
             'channel_missing': (
                 'Go to user preferences and select a current_channel ("%s")'
             ),
-            'channel_change_not_allowed': (
-                'Cannot change channel'
-            ),
             'not_create_channel': (
                 'You cannot create order under this channel because you do not '
                 'have required permissions'
@@ -272,17 +269,6 @@ class Sale:
                 return False
             self.raise_user_error('not_create_channel')
         return True
-
-    @classmethod
-    def write(cls, sales, values, *args):
-        """
-        Check if channel in sale is is user's create_channel
-        """
-        if 'channel' in values:
-            # Channel cannot be changed at any cost.
-            cls.raise_user_error('channel_change_not_allowed')
-
-        super(Sale, cls).write(sales, values, *args)
 
     @classmethod
     def create(cls, vlist):
