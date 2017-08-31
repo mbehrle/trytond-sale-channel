@@ -51,7 +51,9 @@ class Sale:
     )
 
     # XXX: to identify sale order in external channel
-    channel_identifier = fields.Char('Channel Identifier', readonly=True)
+    channel_identifier = fields.Char(
+        'Channel Identifier', readonly=True, select=True
+    )
 
     @classmethod
     def view_attributes(cls):
@@ -126,9 +128,6 @@ class Sale:
         cls._error_messages.update({
             'channel_missing': (
                 'Go to user preferences and select a current_channel ("%s")'
-            ),
-            'channel_change_not_allowed': (
-                'Cannot change channel'
             ),
             'not_create_channel': (
                 'You cannot create order under this channel because you do not '
@@ -270,19 +269,6 @@ class Sale:
                 return False
             self.raise_user_error('not_create_channel')
         return True
-
-    @classmethod
-    def write(cls, sales, values, *args):
-        """
-        Check if channel in sale is is user's create_channel
-        Channel can only be changed in state 'draft'
-        """
-        if 'channel' in values:
-            for sale in sales:
-                if sale.state != 'draft':
-                    cls.raise_user_error('channel_change_not_allowed')
-
-        super(Sale, cls).write(sales, values, *args)
 
     @classmethod
     def create(cls, vlist):
