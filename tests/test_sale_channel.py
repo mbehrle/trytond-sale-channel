@@ -467,24 +467,6 @@ class TestSaleChannel(BaseTestCase, ModuleTestCase):
             sale2.save()
 
     @with_transaction()
-    def test_0070_state_change(self):
-        """
-        No matter who you are, cannot change channel on quote state
-        """
-        self.setup_defaults()
-
-        #      USER       Channel1    Channel2    Channel3  Channel4
-        #    sale_user       -           R           RW       RW
-        #    sale_admin     N/A         N/A         N/A      N/A
-        sale3 = self.create_sale(USER, self.channel3)
-        self.Sale.quote([sale3])
-        self.assertEqual(sale3.state, 'quotation')
-
-        with self.assertRaises(UserError):
-            sale3.channel = self.channel4
-            sale3.save()
-
-    @with_transaction()
     def test_0080_check_create_access(self):
         """
         Check user have access to channel
