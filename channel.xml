@@ -182,7 +182,7 @@
             <field name="name">Export Product Prices</field>
             <field name="request_user" ref="res.user_admin"/>
             <field name="user" ref="user_trigger_orders"/>
-            <field name="active" eval="True"/>
+            <field name="active" eval="False"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="number_calls">-1</field>
