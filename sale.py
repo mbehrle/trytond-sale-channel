@@ -3,7 +3,7 @@
     sale
 
 """
-from trytond.model import fields
+from trytond.model import fields, Unique
 from trytond.transaction import Transaction
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, Or, Bool, If
@@ -63,23 +63,6 @@ class Sale:
                     })]
 
     @classmethod
-    def validate(cls, sales):
-        super(Sale, cls).validate(sales)
-        for sale in sales:
-            sale.check_channel_identifier()
-
-    def check_channel_identifier(self):
-        """
-        Make sure sale has no duplicate channel identifier
-        """
-        if self.channel_identifier and self.search([
-            ('channel_identifier', '=', self.channel_identifier),
-            ('channel', '=', self.channel.id),
-            ('id', '!=', self.id),
-        ]):
-            self.raise_user_error('duplicate_order', (self.channel_identifier,))
-
-    @classmethod
     def search_has_channel_exception(cls, name, clause):
         """
         Returns domain for sale with exceptions
@@ -124,7 +107,12 @@ class Sale:
     @classmethod
     def __setup__(cls):
         super(Sale, cls).__setup__()
-
+        table = cls.__table__()
+        cls._sql_constraints += [(
+            'origin_channel_identifier',
+            Unique(table, table.channel, table.channel_identifier),
+            'Channel identifier for a channel should be unique'
+        )]
         cls._error_messages.update({
             'channel_missing': (
                 'Go to user preferences and select a current_channel ("%s")'
@@ -133,7 +121,6 @@ class Sale:
                 'You cannot create order under this channel because you do not '
                 'have required permissions'
             ),
-            "duplicate_order": 'Sale with Order ID "%s" already exists',
             "channel_exception": (
                 "You missed some unresolved exceptions in sale %s."
             ),
@@ -358,17 +345,6 @@ class SaleLine:
     channel_identifier = fields.Char('Channel Identifier', readonly=True)
 
     @classmethod
-    def __setup__(cls):
-        """
-        Setup the class before adding to pool
-        """
-        super(SaleLine, cls).__setup__()
-        cls._error_messages.update({
-            "duplicate_order_line":
-                'Sale Line with Order Item ID "%s" already exists',
-        })
-
-    @classmethod
     def copy(cls, lines, default=None):
         """
         Duplicating records
@@ -379,25 +355,6 @@ class SaleLine:
         default['channel_identifier'] = None
 
         return super(SaleLine, cls).copy(lines, default=default)
-
-    @classmethod
-    def validate(cls, lines):
-        super(SaleLine, cls).validate(lines)
-        for line in lines:
-            line.check_channel_identifier()
-
-    def check_channel_identifier(self):
-        """
-        Make sure sale line has no duplicate channel identifier
-        """
-        if self.channel_identifier and self.search([
-            ('channel_identifier', '=', self.channel_identifier),
-            ('sale.channel', '=', self.sale.channel.id),
-            ('id', '!=', self.id),
-        ]):
-            self.raise_user_error(
-                'duplicate_order_line', (self.channel_identifier,)
-            )
 
     def create_payment_from(self, payment_data):
         """
