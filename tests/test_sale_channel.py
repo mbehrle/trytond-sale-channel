@@ -685,31 +685,6 @@ class TestSaleChannel(BaseTestCase, ModuleTestCase):
             sale2.save()
 
     @with_transaction()
-    def test_0095_check_duplicate_channel_identifier_for_sale_line(self):
-        """
-        Check if error is raised for duplicate channel identifier in sale line
-        """
-        self.setup_defaults()
-
-        sale = self.create_sale(1, self.channel1)
-
-        self.SaleLine.create([{
-            'type': 'comment',
-            'channel_identifier': 'Sale Line 1',
-            'description': 'Sale Line',
-            'sale': sale.id
-        }])
-
-        # Create sale line with same channel identifer, should raise error
-        with self.assertRaises(UserError):
-            self.SaleLine.create([{
-                'type': 'comment',
-                'channel_identifier': 'Sale Line 1',
-                'sale': sale,
-                'description': 'Sale Line',
-            }])
-
-    @with_transaction()
     def test_0100_return_sale_with_channel_identifier(self):
         """
         Check if return sale works with channel_identifier
