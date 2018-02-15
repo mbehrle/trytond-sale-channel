@@ -51,6 +51,6 @@ class PartySaleChannelListing(ModelSQL, ModelView):
         table = cls.__table__()
         cls._sql_constraints += [(
             'channel_party_unique',
-            Unique(table, table.channel, table.contact_identifier, table.party),
+            Unique(table, table.channel, table.contact_identifier),
             'Contact is already mapped to this channel with same identifier'
         )]
