@@ -293,14 +293,6 @@ class Sale:
 
         return super(Sale, cls).copy(sales, default=default)
 
-    @classmethod
-    def confirm(cls, sales):
-        "Validate sale before confirming"
-        for sale in sales:
-            if sale.has_channel_exception:
-                cls.raise_user_error('channel_exception', sale.reference)
-        super(Sale, cls).confirm(sales)
-
     def process_to_channel_state(self, channel_state):
         """
         Process the sale in tryton based on the state of order
