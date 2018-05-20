@@ -9,6 +9,10 @@ msgstr ""
 "eingetragen."
 
 msgctxt "error:product.product.channel_listing:"
+msgid "Product is already mapped to this channel"
+msgstr "Variante ist schon für diesen Kanal konfiguriert"
+
+msgctxt "error:product.product.channel_listing:"
 msgid "This external product is already mapped with same channel."
 msgstr "Diese externe Variante ist in diesem Kanal bereits eingetragen."
 
@@ -647,6 +651,10 @@ msgctxt "field:sale.channel.import_data.start,import_orders:"
 msgid "Import Orders"
 msgstr "Aufträge importieren"
 
+msgctxt "field:sale.channel.import_data.start,import_product_images:"
+msgid "Import Product Images"
+msgstr "Variantenbilder importieren"
+
 msgctxt "field:sale.channel.import_data.start,import_products:"
 msgid "Import Products"
 msgstr "Artikel importieren"
@@ -831,6 +839,11 @@ msgctxt "help:sale.channel,invoice_tax_account:"
 msgid "GL to book for taxes when new taxes are created from channel"
 msgstr "Konto für neu aus dem Vertriebskanal erstellte Steuern"
 
+msgctxt "help:sale.channel.import_data.start,import_product_images:"
+msgid "Selecting this option will import images for all listed products"
+msgstr ""
+"Bei Aktivierung werden die Bilder aller gelisteteten Varianten importiert."
+
 msgctxt "model:channel.exception,name:"
 msgid "Channel Exception model"
 msgstr "Vertriebskanal Ausnahme Modell"
@@ -910,7 +923,7 @@ msgstr "Aufträge importieren"
 
 msgctxt "model:ir.cron,name:cron_update_orders"
 msgid "Update Orders"
-msgstr "Bestellungen aktualisieren"
+msgstr "Aufträge aktualisieren"
 
 msgctxt "model:ir.cron,name:ir_cron_export_inventory"
 msgid "Export Inventory"
@@ -919,6 +932,10 @@ msgstr "Lagerbestand exportieren"
 msgctxt "model:ir.cron,name:ir_cron_export_product_prices"
 msgid "Export Product Prices"
 msgstr "Artikelpreise exportieren"
+
+msgctxt "model:ir.cron,name:ir_cron_import_products"
+msgid "Import Products"
+msgstr "Artikel importieren"
 
 msgctxt "model:ir.ui.menu,name:menu_sale_channel"
 msgid "Channels"
