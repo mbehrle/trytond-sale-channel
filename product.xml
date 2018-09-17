@@ -18,14 +18,19 @@
         </record>
 
         <!-- Relate from Channel to Product Listing -->
+        <record model="ir.action.act_window" id="act_sale_channel_listing2">
+            <field name="name">Channel Listing</field>
+            <field name="res_model">product.product.channel_listing</field>
+            <field name="domain" eval="[('channel', '=', Eval('active_id'))]" pyson="1"/>
+        </record>
+        <record model="ir.action.keyword" id="act_sale_channel_listing_keyword">
+            <field name="keyword">form_relate</field>
+            <field name="model">sale.channel,-1</field>
+            <field name="action" ref="act_sale_channel_listing2"/>
+        </record>
         <record model="ir.action.act_window" id="act_sale_channel_listing">
             <field name="name">Channel Listing</field>
             <field name="res_model">product.product.channel_listing</field>
-        </record>
-         <record model="ir.action.keyword" id="act_sale_channel_listing_keyword">
-            <field name="keyword">form_relate</field>
-            <field name="model">sale.channel,-1</field>
-            <field name="action" ref="act_sale_channel_listing"/>
         </record>
         <record model="ir.action.act_window.view" id="act_sale_channel_listing_view_1">
             <field name="sequence" eval="10"/>

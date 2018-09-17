@@ -200,7 +200,7 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
     ], 'State', required=True, select=True)
     channel_source = fields.Function(
         fields.Char("Channel Source"),
-        getter="on_change_with_channel_source"
+        getter="get_channel_source"
     )
 
     quantity = fields.Function(
@@ -240,12 +240,15 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
             ('product_identifier',) + tuple(clause[1:]),
         ]
 
-    def get_unit_digits(self, name):
-        if self.product:
-            self.product.default_uom.digits
-        return 2
+    @classmethod
+    def get_unit_digits(cls, records, name):
+        result = {r.id: r.product.default_uom.digits if r.product else 2
+                  for r in records}
 
-    def get_listing_url(self, name):
+        return result
+
+    @classmethod
+    def get_listing_url(cls, records, name):
         """
         Downstream modules should implement this function
         and return a valid url
@@ -271,6 +274,12 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
                 )
                 values['quantity'][listing.id] = availability.get('quantity')
         return values
+
+    @classmethod
+    def get_channel_source(cls, records, name):
+        result = {r.id: r.channel and r.channel.source for r in records}
+
+        return result
 
     @fields.depends('channel')
     def on_change_with_channel_source(self, name=None):

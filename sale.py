@@ -337,18 +337,6 @@ class SaleLine:
     # XXX: to identify sale order item in external channel
     channel_identifier = fields.Char('Channel Identifier', readonly=True)
 
-    @classmethod
-    def copy(cls, lines, default=None):
-        """
-        Duplicating records
-        """
-        if default is None:
-            default = {}
-
-        default['channel_identifier'] = None
-
-        return super(SaleLine, cls).copy(lines, default=default)
-
     def create_payment_from(self, payment_data):
         """
         Create sale payment using given data.

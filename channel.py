@@ -342,7 +342,7 @@ class SaleChannel(ModelSQL, ModelView):
             carrier, = SaleCarrierChannel.search([
                 ('code', 'ilike', code),
                 ('channel', '=', self.id),
-            ])
+            ], limit=1)
         except ValueError:
             if silent:
                 return None
