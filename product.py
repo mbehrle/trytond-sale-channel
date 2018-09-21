@@ -245,7 +245,7 @@ class ProductSaleChannelListing(ModelSQL, ModelView):
         Downstream modules should implement this function
         and return a valid url
         """
-        return None
+        return dict.fromkeys([r.id for r in records])
 
     @classmethod
     def get_availability_fields(cls, listings, names):
